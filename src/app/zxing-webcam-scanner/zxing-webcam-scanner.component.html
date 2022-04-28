@@ -1,8 +1,8 @@
 <div>
   <video
     id="video"
-    width="300"
-    height="200"
+    width="800"
+    height="600"
     #video
     style="border: 1px solid gray"
   ></video>
@@ -20,3 +20,8 @@
 </div>
 <label>Result:</label>
 <pre><code *ngFor="let res of encodeResult" id="result">{{res.text}}</code><br></pre>
+<pre *ngFor="let splited of encodeResultSplited">
+  <code *ngFor="let str of splited">
+    {{str}}
+  </code>
+</pre>

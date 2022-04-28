@@ -22,6 +22,7 @@ export class ZxingWebcamScannerComponent implements AfterViewInit {
   selectedDeviceId: string;
   videoInputDevices: MediaDeviceInfo[];
   encodeResult: Result[] = [];
+  encodeResultSplited: string[][] = [];
   hints = new Map();
   formats = [BarcodeFormat.QR_CODE, BarcodeFormat.DATA_MATRIX, BarcodeFormat.AZTEC];
   @ViewChild("video") videoElement;
@@ -50,6 +51,7 @@ export class ZxingWebcamScannerComponent implements AfterViewInit {
       if (result) {
         console.log(result);
         console.log(this.detectCharSet(result.text))
+        this.encodeResultSplited.push(result.text.split('|').slice(1))
         this.encodeResult.push(result);
       }
       if (err && !(err instanceof NotFoundException)) {
@@ -58,16 +60,18 @@ export class ZxingWebcamScannerComponent implements AfterViewInit {
     }
   }
 
-  detectCharSet(text:string) {
+  detectCharSet(text:string):CharSetPrefixMatch {
     const charSetPrefix = text.split('|')
     if(charSetPrefix?.length) {
-      return charSetPrefix
+      return CharSetPrefixMatch[charSetPrefix[0]]
     }
+    return null
   }
 
   resetEncode() {
     this.codeReader.reset();
     this.encodeResult = [];
+    this.encodeResultSplited = []
   }
   onChangeSelectDivices(ev): void {
     this.selectedDeviceId = ev.value;
