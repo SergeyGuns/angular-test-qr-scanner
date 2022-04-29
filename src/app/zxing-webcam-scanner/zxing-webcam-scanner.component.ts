@@ -1,20 +1,16 @@
 import { AfterViewInit, Component, ViewChild } from "@angular/core";
-import cp1251 from "./utils/windows-1251";
-import koi8r from "./utils/koi8r";
 import {
   BarcodeFormat,
   BrowserMultiFormatReader, DecodeHintType, NotFoundException,
-  Result
+  Result, StringUtils
 } from "@zxing/library";
 
+// ГОСТ Р 56042-2014
 enum CharSetPrefix {
   ST00011 = "ST00011",
   ST00012 = "ST00012",
   ST00013 = "ST00013"
 }
-
-
-
 
 @Component({
   selector: "app-zxing-webcam-scanner",
@@ -22,21 +18,20 @@ enum CharSetPrefix {
   styleUrls: ["./zxing-webcam-scanner.component.scss"],
 })
 export class ZxingWebcamScannerComponent implements AfterViewInit {
+  // ГОСТ Р 56042-2014
   CHAR_SET_PREFIX_MATCH_ENCODER = {
-    [CharSetPrefix.ST00011]: (t) => cp1251.decode(cp1251.encode(t),{
-      mode: 'replacement'
-    }),
-    [CharSetPrefix.ST00012]: decodeURI,
-    [CharSetPrefix.ST00013]: koi8r.decode
-    // "ST00011" = CharacterSetValueIdentifiers.Cp1251,
-    // "ST00012" = CharacterSetValueIdentifiers.UTF8,
-    // "ST00013" = CharacterSetValueIdentifiers.koi8r
+    [CharSetPrefix.ST00011]: 'cp1251',
+    [CharSetPrefix.ST00012]: 'utf-8',
+    [CharSetPrefix.ST00013]: 'koi8r'
   }
-  decodeTextByPrefix(prefix, text) {
+  decodeScannerResultByPrefix(prefix, scannerResult:Result):string {
     if(this.CHAR_SET_PREFIX_MATCH_ENCODER.hasOwnProperty(prefix)) {
-      return this.CHAR_SET_PREFIX_MATCH_ENCODER[prefix](text)
+      const charSetLabel = this.CHAR_SET_PREFIX_MATCH_ENCODER[prefix]
+      const hints = new Map()
+      hints.set(DecodeHintType.CHARACTER_SET, charSetLabel)
+      return StringUtils.guessEncoding(scannerResult.getRawBytes(), hints)
     }
-    return text
+    return scannerResult.getText()
   }
   codeReader: BrowserMultiFormatReader;
   selectedDeviceId: string;
@@ -46,7 +41,6 @@ export class ZxingWebcamScannerComponent implements AfterViewInit {
   hints = new Map();
   formats = [BarcodeFormat.QR_CODE, BarcodeFormat.DATA_MATRIX, BarcodeFormat.AZTEC];
   @ViewChild("video") videoElement;
-  constructor() {}
   
   ngAfterViewInit(): void {
     this.hints.set(DecodeHintType.POSSIBLE_FORMATS, this.formats);
@@ -67,12 +61,13 @@ export class ZxingWebcamScannerComponent implements AfterViewInit {
   }
 
   decodeCallBack() {
-    return (result, err) => {
-      if (result) {
-        const [charSetPrefix, ...text] = result.text.split('|')
-
-        // this.encodeResultSplited.push(result.text.split('|').map((line)=>this.decodeTextByPrefix(charSetPrefix, line)))
-        this.encodeResult.push(result);
+    return (scannerResult, err) => {
+      if (scannerResult) {
+        let result = ''
+        const [charSetPrefix, ...text] = scannerResult.text.split('|')
+        const decodedResult = this.decodeScannerResultByPrefix(charSetPrefix, scannerResult)
+        this.encodeResultSplited.push(this.decodeScannerResultByPrefix(charSetPrefix, scannerResult).split('|'))
+        this.encodeResult.push(scannerResult);
         this.encodeResultSplited.push(text);
       }
       if (err && !(err instanceof NotFoundException)) {
@@ -80,14 +75,6 @@ export class ZxingWebcamScannerComponent implements AfterViewInit {
       }
     }
   }
-
-  // detectCharSet(text:string):CharSetPrefixMatch {
-  //   const charSetPrefix = text.split('|')
-  //   if(charSetPrefix?.length) {
-  //     return CharSetPrefixMatch[charSetPrefix[0]]
-  //   }
-  //   return null
-  // }
 
   resetEncode() {
     this.codeReader.reset();
