@@ -1,16 +1,20 @@
 import { AfterViewInit, Component, ViewChild } from "@angular/core";
+import cp1251 from "./utils/windows-1251";
+import koi8r from "./utils/koi8r";
 import {
   BarcodeFormat,
   BrowserMultiFormatReader, DecodeHintType, NotFoundException,
   Result
 } from "@zxing/library";
-import { CharacterSetValueIdentifiers } from "@zxing/library/esm/core/common/CharacterSetECI";
 
-enum CharSetPrefixMatch {
-  "ST00011" = CharacterSetValueIdentifiers.Cp1251,
-  "ST00012" = CharacterSetValueIdentifiers.UTF8,
-  // "ST00013" = CharacterSetValueIdentifiers.koi8r
+enum CharSetPrefix {
+  ST00011 = "ST00011",
+  ST00012 = "ST00012",
+  ST00013 = "ST00013"
 }
+
+
+
 
 @Component({
   selector: "app-zxing-webcam-scanner",
@@ -18,6 +22,22 @@ enum CharSetPrefixMatch {
   styleUrls: ["./zxing-webcam-scanner.component.scss"],
 })
 export class ZxingWebcamScannerComponent implements AfterViewInit {
+  CHAR_SET_PREFIX_MATCH_ENCODER = {
+    [CharSetPrefix.ST00011]: (t) => cp1251.decode(cp1251.encode(t),{
+      mode: 'replacement'
+    }),
+    [CharSetPrefix.ST00012]: decodeURI,
+    [CharSetPrefix.ST00013]: koi8r.decode
+    // "ST00011" = CharacterSetValueIdentifiers.Cp1251,
+    // "ST00012" = CharacterSetValueIdentifiers.UTF8,
+    // "ST00013" = CharacterSetValueIdentifiers.koi8r
+  }
+  decodeTextByPrefix(prefix, text) {
+    if(this.CHAR_SET_PREFIX_MATCH_ENCODER.hasOwnProperty(prefix)) {
+      return this.CHAR_SET_PREFIX_MATCH_ENCODER[prefix](text)
+    }
+    return text
+  }
   codeReader: BrowserMultiFormatReader;
   selectedDeviceId: string;
   videoInputDevices: MediaDeviceInfo[];
@@ -49,10 +69,11 @@ export class ZxingWebcamScannerComponent implements AfterViewInit {
   decodeCallBack() {
     return (result, err) => {
       if (result) {
-        console.log(result);
-        console.log(this.detectCharSet(result.text))
-        this.encodeResultSplited.push(result.text.split('|').slice(1))
+        const [charSetPrefix, ...text] = result.text.split('|')
+
+        // this.encodeResultSplited.push(result.text.split('|').map((line)=>this.decodeTextByPrefix(charSetPrefix, line)))
         this.encodeResult.push(result);
+        this.encodeResultSplited.push(text);
       }
       if (err && !(err instanceof NotFoundException)) {
         console.error(err);
@@ -60,13 +81,13 @@ export class ZxingWebcamScannerComponent implements AfterViewInit {
     }
   }
 
-  detectCharSet(text:string):CharSetPrefixMatch {
-    const charSetPrefix = text.split('|')
-    if(charSetPrefix?.length) {
-      return CharSetPrefixMatch[charSetPrefix[0]]
-    }
-    return null
-  }
+  // detectCharSet(text:string):CharSetPrefixMatch {
+  //   const charSetPrefix = text.split('|')
+  //   if(charSetPrefix?.length) {
+  //     return CharSetPrefixMatch[charSetPrefix[0]]
+  //   }
+  //   return null
+  // }
 
   resetEncode() {
     this.codeReader.reset();

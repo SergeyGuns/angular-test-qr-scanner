@@ -1,8 +1,6 @@
 <div>
   <video
     id="video"
-    width="800"
-    height="600"
     #video
     style="border: 1px solid gray"
   ></video>
@@ -19,9 +17,12 @@
     <button (click)="resetEncode()" class="button" id="resetButton">Reset</button>
 </div>
 <label>Result:</label>
-<pre><code *ngFor="let res of encodeResult" id="result">{{res.text}}</code><br></pre>
+<div *ngFor="let res of encodeResult" id="result"><code>{{res.text}}</code>
+  <hr>
+</div>
 <pre *ngFor="let splited of encodeResultSplited">
   <code *ngFor="let str of splited">
     {{str}}
   </code>
+  <hr>
 </pre>
