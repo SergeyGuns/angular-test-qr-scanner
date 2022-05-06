@@ -16,6 +16,9 @@
       "dom"
     ]
   },
+  "exclude": [
+    "src/app/vendor"
+  ],
   "angularCompilerOptions": {
     "fullTemplateTypeCheck": true,
     "strictInjectionParameters": true

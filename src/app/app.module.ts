@@ -2,17 +2,19 @@ import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
 
 import { AppComponent } from './app.component';
-import { WebcamScannerComponent } from './webcam-scanner/webcam-scanner.component';
 import { ZxingWebcamScannerComponent } from './zxing-webcam-scanner/zxing-webcam-scanner.component';
+import { RouterModule } from '@angular/router';
+import { routes } from './app.routes';
+
 
 @NgModule({
   declarations: [
     AppComponent,
-    WebcamScannerComponent,
     ZxingWebcamScannerComponent
   ],
   imports: [
-    BrowserModule
+    BrowserModule,
+    RouterModule.forRoot(routes)
   ],
   providers: [],
   bootstrap: [AppComponent]

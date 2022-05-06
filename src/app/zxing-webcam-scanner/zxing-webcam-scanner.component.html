@@ -1,21 +1,26 @@
-<div>
+<div *ngIf="state === STATE.ERROR">
+  {{STATE.ERROR}} - {{encodeDefaultCharSet}}
+</div>
+<div *ngIf="state === STATE.SUCCESS">
+  {{STATE.SUCCESS}} - {{encodeDefaultCharSet}}
+</div>
+<div *ngIf="state === STATE.READING">
+  {{STATE.READING}} - {{encodeDefaultCharSet}}
+</div>
+<div *ngIf="state === STATE.READING" >
   <video
     id="video"
     #video
     style="border: 1px solid gray"
   ></video>
 </div>
-
-<select onchange="onChangeSelectDivices">
-    <option
-    *ngFor="let option of videoInputDevices"
-    value="{{option.deviceId}}"
-    >{{option.deviceId}}</option>
-</select>
-<div>
+<div *ngIf="hasMultipleCameras()">
+  <button (click)="onChangeCamera()">переключить камеру</button>
+</div>
+<!-- <div>
     <button (click)="startEncode()" class="button" id="startButton">Start</button>
     <button (click)="resetEncode()" class="button" id="resetButton">Reset</button>
-</div>
+</div> -->
 <label>Result:</label>
 <div *ngFor="let res of encodeResult" id="result"><code>{{res.text}}</code>
   <hr>
