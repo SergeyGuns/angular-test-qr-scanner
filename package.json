@@ -7,7 +7,7 @@
     "start2": "ng serve --disableHostCheck",
     "start3": "ng serve --host 0.0.0.0 --ssl true --ssl-key /node_modules/browser-sync/lib/server/certs/server.key --ssl-cert /node_modules/browser-sync/lib/server/certs/server.crt",
     "build": "ng build",
-    "deploy": "ng deploy --base-href=https://sergeyguns.github.io/angular-test-qr-scanner",
+    "deploy": "ng deploy --base-href=/angular-test-qr-scanner/",
     "test": "ng test",
     "lint": "ng lint",
     "e2e": "ng e2e"
