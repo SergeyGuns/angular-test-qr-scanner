@@ -5,12 +5,14 @@ import { AppComponent } from './app.component';
 import { ZxingWebcamScannerComponent } from './zxing-webcam-scanner/zxing-webcam-scanner.component';
 import { RouterModule } from '@angular/router';
 import { routes } from './app.routes';
+import { UploadImageScannerComponent } from './upload-image-scanner/upload-image-scanner.component';
 
 
 @NgModule({
   declarations: [
     AppComponent,
-    ZxingWebcamScannerComponent
+    ZxingWebcamScannerComponent,
+    UploadImageScannerComponent
   ],
   imports: [
     BrowserModule,

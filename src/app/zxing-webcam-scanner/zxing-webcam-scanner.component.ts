@@ -6,6 +6,7 @@ import {
   NotFoundException,
   Result
 } from "../../vendor/zxingjs-library-es2015";
+import { CharSetPrefix, CHAR_SET_PREFIX_MATCH_ENCODER } from "../utils/scanner";
 
 enum ScannerState {
   READING="Reading",
@@ -13,14 +14,8 @@ enum ScannerState {
   ERROR="Error"
 }
 
-// ГОСТ Р 56042-2014
-enum CharSetPrefix {
-  ST00011 = "ST00011",
-  ST00012 = "ST00012",
-  ST00013 = "ST00013",
-}
 
-// BrowserMultiFormatReader.decodeFromVideoDevice
+
 
 @Component({
   selector: "app-zxing-webcam-scanner",
@@ -29,26 +24,9 @@ enum CharSetPrefix {
 })
 export class ZxingWebcamScannerComponent implements AfterViewInit {
   STATE = ScannerState
-  // ГОСТ Р 56042-2014
-  
-  CHAR_SET_PREFIX_MATCH_ENCODER = {
-    [CharSetPrefix.ST00011]: "Cp1251",
-    [CharSetPrefix.ST00012]: "UTF8",
-    [CharSetPrefix.ST00013]: "KOI8_R",
-  };
-  // decodeScannerResultByPrefix(prefix, scannerResult:Result):string {
-  //   if(this.CHAR_SET_PREFIX_MATCH_ENCODER.hasOwnProperty(prefix)) {
-  //     const charSetLabel = this.CHAR_SET_PREFIX_MATCH_ENCODER[prefix]
-  //     const hints = new Map()
-  //     hints.set(DecodeHintType.CHARACTER_SET, charSetLabel)
-  //     const result = ZXingStringEncoding.decode(scannerResult.getRawBytes(), charSetLabel)
-  //     return result
-  //   }
-  //   return scannerResult.getText()
-  // }
   state:ScannerState = ScannerState.READING 
   encodeDefaultCharSet =
-    this.CHAR_SET_PREFIX_MATCH_ENCODER[CharSetPrefix.ST00012];
+    CHAR_SET_PREFIX_MATCH_ENCODER[CharSetPrefix.ST00012];
   codeReader: BrowserMultiFormatReader;
   selectedDeviceId: string;
   videoInputDevices: MediaDeviceInfo[] = [];
@@ -102,13 +80,13 @@ export class ZxingWebcamScannerComponent implements AfterViewInit {
       const [charSetPrefix] = scannerResult.text.split("|");
       console.log({ before: scannerResult.text });
       console.log(
-        this.CHAR_SET_PREFIX_MATCH_ENCODER[charSetPrefix],
+        CHAR_SET_PREFIX_MATCH_ENCODER[charSetPrefix],
         this.encodeDefaultCharSet
       );
-      if (this.CHAR_SET_PREFIX_MATCH_ENCODER[charSetPrefix] && this.CHAR_SET_PREFIX_MATCH_ENCODER[charSetPrefix] !== this.encodeDefaultCharSet
+      if (CHAR_SET_PREFIX_MATCH_ENCODER[charSetPrefix] && CHAR_SET_PREFIX_MATCH_ENCODER[charSetPrefix] !== this.encodeDefaultCharSet
       ) {
         this.encodeDefaultCharSet =
-          this.CHAR_SET_PREFIX_MATCH_ENCODER[charSetPrefix];
+          CHAR_SET_PREFIX_MATCH_ENCODER[charSetPrefix];
         const newHints = new Map();
         newHints.set(DecodeHintType.POSSIBLE_FORMATS, this.formats);
         newHints.set(DecodeHintType.CHARACTER_SET, this.encodeDefaultCharSet);
