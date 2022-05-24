@@ -67,6 +67,7 @@ export default class DataMatrixReader {
         if (ecLevel != null) {
             result.putMetadata(ResultMetadataType.ERROR_CORRECTION_LEVEL, ecLevel);
         }
+        result.putMetadata(ResultMetadataType.BINARY_BITMAP, image);
         return result;
     }
     // @Override

@@ -81,6 +81,7 @@ var ResultMetadataType;
      * parity is given with it.
      */
     ResultMetadataType[ResultMetadataType["STRUCTURED_APPEND_PARITY"] = 10] = "STRUCTURED_APPEND_PARITY";
+    ResultMetadataType[ResultMetadataType["BINARY_BITMAP"] = 11] = "BINARY_BITMAP";
 })(ResultMetadataType || (ResultMetadataType = {}));
 export default ResultMetadataType;
 //# sourceMappingURL=ResultMetadataType.js.map

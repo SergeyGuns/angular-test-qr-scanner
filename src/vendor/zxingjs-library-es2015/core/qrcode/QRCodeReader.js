@@ -81,6 +81,7 @@ export default class QRCodeReader {
             result.putMetadata(ResultMetadataType.STRUCTURED_APPEND_SEQUENCE, decoderResult.getStructuredAppendSequenceNumber());
             result.putMetadata(ResultMetadataType.STRUCTURED_APPEND_PARITY, decoderResult.getStructuredAppendParity());
         }
+        result.putMetadata(ResultMetadataType.BINARY_BITMAP, image);
         return result;
     }
     /*@Override*/

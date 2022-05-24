@@ -1,11 +1,5 @@
-<div *ngIf="state === STATE.ERROR">
-  {{STATE.ERROR}} - {{encodeDefaultCharSet}}
-</div>
-<div *ngIf="state === STATE.SUCCESS">
-  {{STATE.SUCCESS}} - {{encodeDefaultCharSet}}
-</div>
-<div *ngIf="state === STATE.READING">
-  {{STATE.READING}} - {{encodeDefaultCharSet}}
+<div>
+  {{state}} - {{encodeDefaultCharSet}}
 </div>
 <div *ngIf="state === STATE.READING" >
   <video
@@ -22,12 +16,22 @@
     <button (click)="resetEncode()" class="button" id="resetButton">Reset</button>
 </div> -->
 <label>Result:</label>
-<div *ngFor="let res of encodeResult" id="result"><code>{{res.text}}</code>
+<div *ngFor="let res of result" id="result"><code>{{res.text}}</code>
   <hr>
 </div>
-<pre *ngFor="let splited of encodeResultSplited">
+<pre *ngFor="let splited of resultSplited">
   <code *ngFor="let str of splited">
     {{str}}
   </code>
   <hr>
 </pre>
+<hr>
+<div *ngFor="let item in resultVariants | keyvalue">
+  char set : {{item.key}}
+  <pre *ngFor="let splited of item.value">
+    <code *ngFor="let str of splited">
+      {{str}}
+    </code>
+    <hr>
+  </pre>
+</div>
