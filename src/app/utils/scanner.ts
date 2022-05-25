@@ -5,7 +5,7 @@ export enum CharSetPrefix {
     ST00013 = "ST00013",
 };
 
-export const invalidCharReg = new RegExp('[^\u0020-\u007e\u00a0\u00a9\u00ab\u00ad\u00ae\u00bb\u0401\u0410-\u044f\u0451]')
+export const invalidCharReg = new RegExp('[^ -~ ©«­®»ЁА-яё]')
 export const NSPKValidReg = new RegExp('https\:\/\/qr\.nspk\.ru\/.*$')
 export const koi8rValidReg = new RegExp('(?<=[^а-яА-ЯёЁ])([а-яё][А-ЯЁ]+)+?(?=[^а-яА-ЯёЁ]|$)')
 
