@@ -7,7 +7,7 @@ export enum CharSetPrefix {
 
 export const invalidCharReg = new RegExp('[^ -~ ©«­®»ЁА-яё]')
 export const NSPKValidReg = new RegExp('https\:\/\/qr\.nspk\.ru\/.*$')
-export const koi8rValidReg = new RegExp('(?<=[^а-яА-ЯёЁ])([а-яё][А-ЯЁ]+)+?(?=[^а-яА-ЯёЁ]|$)')
+export const koi8rValidReg = new RegExp('[^а-яёА-ЯЁ][а-яё][А-ЯЁ]')
 
 export const isNSPKValid = text =>  text.match(NSPKValidReg)
 export const hasInvalidСharacters = text => text.match(invalidCharReg)
