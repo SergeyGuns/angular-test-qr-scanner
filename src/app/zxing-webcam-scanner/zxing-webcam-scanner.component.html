@@ -1,5 +1,5 @@
 <div>
-  {{state}} - {{encodeDefaultCharSet}}
+  {{state}}
 </div>
 <div *ngIf="state === STATE.READING" >
   <video
@@ -16,7 +16,7 @@
     <button (click)="resetEncode()" class="button" id="resetButton">Reset</button>
 </div> -->
 <label>Result:</label>
-<div *ngFor="let res of result" id="result"><code>{{res.text}}</code>
+<div *ngFor="let res of result" id="result"><code>{{res}}</code>
   <hr>
 </div>
 <pre *ngFor="let splited of resultSplited">

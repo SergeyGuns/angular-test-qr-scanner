@@ -8,7 +8,11 @@ import {
   Result,
   ResultMetadataType,
 } from "../../vendor/zxingjs-library-es2015";
-import { CharSetPrefix, chekingCharSet, CHEKING_STATUS } from "../utils/scanner";
+import {
+  CharSetPrefix,
+  chekingCharSet,
+  CHEKING_STATUS,
+} from "../utils/scanner";
 
 enum ScannerState {
   READING = "Reading",
@@ -16,6 +20,8 @@ enum ScannerState {
   LOADING = "Loading",
   ERROR = "Error",
 }
+
+type CharSet = "Cp1251" | "UTF8" | "KOI8_R"| '';
 
 @Component({
   selector: "app-zxing-webcam-scanner",
@@ -31,19 +37,18 @@ export class ZxingWebcamScannerComponent implements AfterViewInit {
   };
 
   state: ScannerState = ScannerState.READING;
-  public encodeDefaultCharSet =
-    this.CHAR_SET_PREFIX_MATCH_ENCODER[CharSetPrefix.ST00012];
+  public encodeDefaultCharSet:CharSet = "UTF8"
   codeReader: BrowserMultiFormatReader;
   selectedDeviceId: string;
   videoInputDevices: MediaDeviceInfo[] = [];
-  result: Result[] = [];
+  result: string[] = [];
   resultSplited: string[][] = [];
-  resultVariants: any
+  resultVariants: any;
 
   encodeRetryCount = 0;
   MAX_ENCODERETRY_COUNT = 3;
 
-  hints = new Map(); 
+  hints = new Map();
   formats = [
     BarcodeFormat.QR_CODE,
     BarcodeFormat.DATA_MATRIX,
@@ -77,66 +82,61 @@ export class ZxingWebcamScannerComponent implements AfterViewInit {
       .catch((err) => this.codeReaderErrorHandler(err));
   }
 
-  decodeCallBack(scannerResult:Result) {
-    console.log(scannerResult.getText());
-    if(chekingCharSet(scannerResult.getText()) === CHEKING_STATUS.INVALID_ERR) {
-      this.encodeDefaultCharSet = "Cp1251";
-        const newHints = new Map();
-        newHints.set(DecodeHintType.POSSIBLE_FORMATS, this.formats);
-        newHints.set(DecodeHintType.CHARACTER_SET, this.encodeDefaultCharSet);
-        // this.codeReader.decodeOnce
-        this.codeReader = new BrowserMultiFormatReader(newHints);
-        new Promise((resolve, reject) => {
-          try{
-            console.log(scannerResult.getResultMetadata().get(ResultMetadataType.BINARY_BITMAP))
-            const imgBitmap:BinaryBitmap = scannerResult.getResultMetadata().get(ResultMetadataType.BINARY_BITMAP) as BinaryBitmap
-            resolve(this.codeReader.decodeBitmap(imgBitmap))
-          } catch(e) {
-            reject(e)
-          }
-        }).then((result:Result) => this.fixResultScanner(result) )
-    } 
-    
-    if(chekingCharSet(scannerResult.getText()) === CHEKING_STATUS.KOI8R_ERR) {
-      this.encodeDefaultCharSet = "KOI8_R";
-        const newHints = new Map();
-        newHints.set(DecodeHintType.POSSIBLE_FORMATS, this.formats);
-        newHints.set(DecodeHintType.CHARACTER_SET, this.encodeDefaultCharSet);
-        // this.codeReader.decodeOnce
-        this.codeReader = new BrowserMultiFormatReader(newHints);
-        new Promise((resolve, reject) => {
-          try{
-            console.log(scannerResult.getResultMetadata().get(ResultMetadataType.BINARY_BITMAP))
-            const imgBitmap:BinaryBitmap = scannerResult.getResultMetadata().get(ResultMetadataType.BINARY_BITMAP) as BinaryBitmap
-            resolve(this.codeReader.decodeBitmap(imgBitmap))
-          } catch(e) {
-            reject(e)
-          }
-        }).then((result:Result) => this.fixResultScanner(result) )
-    }
-    if (scannerResult) {
-      const [charSetPrefix] = scannerResult.getText().split("|");
-      console.log({ before: scannerResult });
-      console.log(
-        this.CHAR_SET_PREFIX_MATCH_ENCODER[charSetPrefix],
-        this.encodeDefaultCharSet
-      );
-    
-      this.state = ScannerState.SUCCESS;
-      this.resultSplited.push(scannerResult.getText().split("|"));
-      this.result.push(scannerResult);
-    }
+  decodeBitmap(
+    image: BinaryBitmap,
+    charSet: CharSet
+  ): [CHEKING_STATUS, Result] {
+    const newHints = new Map();
+    newHints.set(DecodeHintType.POSSIBLE_FORMATS, this.formats);
+    newHints.set(DecodeHintType.CHARACTER_SET, charSet);
+    const result = new BrowserMultiFormatReader(newHints).decodeBitmap(image);
+    return [chekingCharSet(result.getText()), result];
   }
-  codeReaderErrorHandler(err) {
-    if (err && !(err instanceof NotFoundException)) {
-      console.log(err);
-      this.state = ScannerState.ERROR;
+
+  decodeCallBack(scannerResult: Result) {
+    console.log('UTF8', scannerResult.getText());
+    const chekingCharsetStatus = chekingCharSet(scannerResult.getText());
+    const imageBitmap = scannerResult
+      .getResultMetadata()
+      .get(ResultMetadataType.BINARY_BITMAP) as BinaryBitmap;
+    if (chekingCharsetStatus === CHEKING_STATUS.NSPK_OK) {
+      this.fixResultScanner(scannerResult, 'UTF8');
+    } else if (chekingCharsetStatus === CHEKING_STATUS.GOST_OK) {
+      this.fixResultScanner(scannerResult);
+    } else if (chekingCharsetStatus === CHEKING_STATUS.INVALID_ERR || chekingCharsetStatus === CHEKING_STATUS.KOI8R_ERR) {
+      const anotherCharsetResults: any = {}
+      const [cpStatus, cpResult ] = this.decodeBitmap(imageBitmap, 'Cp1251')
+      console.log('Cp1252', cpResult.getText());
+      anotherCharsetResults[cpStatus] = cpResult
+      const [koStatus, koResult] = this.decodeBitmap(imageBitmap, 'KOI8_R')
+      console.log('KOI8_R', koResult.getText());
+      anotherCharsetResults[koStatus] = koResult
+      if(anotherCharsetResults[CHEKING_STATUS.GOST_OK]) {
+        this.fixResultScanner(anotherCharsetResults[CHEKING_STATUS.GOST_OK])
+      } else {
+        this.fixResultScanner(scannerResult,'UTF8')
+        this.fixResultScanner(cpResult,'Cp1251')
+        this.fixResultScanner(koResult,'KOI8_R')
+        this.codeReaderErrorHandler('Проблема')
+      }
+
+    } else {
+      this.codeReaderErrorHandler('Проблема')
     }
   }
 
-  fixResultScanner(result:Result) {
+  codeReaderErrorHandler(err) {
+    console.log(err);
+    this.state = ScannerState.ERROR;
+    if (err && !(err instanceof NotFoundException)) {
+      console.error(err);
+    }
+  }
+
+  fixResultScanner(result: Result, charSet:CharSet = '') {
+    
     this.resultSplited.push(result.getText().split("|"));
-    this.result.push(result);
+    this.result.push(charSet+' ' + result.getText());
   }
   resetEncode() {
     this.codeReader.reset();
