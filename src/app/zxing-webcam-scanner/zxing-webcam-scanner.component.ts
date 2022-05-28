@@ -21,7 +21,7 @@ enum ScannerState {
   ERROR = "Error",
 }
 
-type CharSet = "Cp1251" | "UTF8" | "KOI8_R"| '';
+type CharSet = "Cp1252" | "Cp1251" | "UTF8" | "KOI8_R"| '';
 
 @Component({
   selector: "app-zxing-webcam-scanner",
@@ -94,6 +94,7 @@ export class ZxingWebcamScannerComponent implements AfterViewInit {
   }
 
   decodeCallBack(scannerResult: Result) {
+    this.state = ScannerState.SUCCESS
     console.log('UTF8', scannerResult.getText());
     const chekingCharsetStatus = chekingCharSet(scannerResult.getText());
     const imageBitmap = scannerResult
@@ -105,17 +106,25 @@ export class ZxingWebcamScannerComponent implements AfterViewInit {
       this.fixResultScanner(scannerResult);
     } else if (chekingCharsetStatus === CHEKING_STATUS.INVALID_ERR || chekingCharsetStatus === CHEKING_STATUS.KOI8R_ERR) {
       const anotherCharsetResults: any = {}
+
       const [cpStatus, cpResult ] = this.decodeBitmap(imageBitmap, 'Cp1251')
-      console.log('Cp1252', cpResult.getText());
+      console.log('Cp1251', cpResult.getText());
       anotherCharsetResults[cpStatus] = cpResult
+
+      const [cp1252Status, cp1252Result ] = this.decodeBitmap(imageBitmap, 'Cp1252')
+      console.log('Cp1252', cp1252Result.getText());
+      anotherCharsetResults[cp1252Status] = cp1252Result
+
       const [koStatus, koResult] = this.decodeBitmap(imageBitmap, 'KOI8_R')
       console.log('KOI8_R', koResult.getText());
       anotherCharsetResults[koStatus] = koResult
+
       if(anotherCharsetResults[CHEKING_STATUS.GOST_OK]) {
         this.fixResultScanner(anotherCharsetResults[CHEKING_STATUS.GOST_OK])
       } else {
         this.fixResultScanner(scannerResult,'UTF8')
         this.fixResultScanner(cpResult,'Cp1251')
+        this.fixResultScanner(cp1252Result,'Cp1252')
         this.fixResultScanner(koResult,'KOI8_R')
         this.codeReaderErrorHandler('Проблема')
       }

@@ -20,6 +20,8 @@ import IllegalStateException from '../../IllegalStateException';
 import FormatException from '../../FormatException';
 import StringUtils from '../../common/StringUtils';
 import Integer from '../../util/Integer';
+import CharacterSetECI from '../../common/CharacterSetECI';
+import DecodeHintType from '../../DecodeHintType';
 // import java.util.Arrays;
 var Table;
 (function (Table) {
@@ -37,27 +39,27 @@ var Table;
  * @author David Olivier
  */
 export default class Decoder {
-    decode(detectorResult) {
+    decode(detectorResult, hints = null) {
         this.ddata = detectorResult;
         let matrix = detectorResult.getBits();
         let rawbits = this.extractBits(matrix);
         let correctedBits = this.correctBits(rawbits);
         let rawBytes = Decoder.convertBoolArrayToByteArray(correctedBits);
-        let result = Decoder.getEncodedData(correctedBits);
+        let result = Decoder.getEncodedData(correctedBits, CharacterSetECI.getCharacterSetECIByValue(hints.get(DecodeHintType.CHARACTER_SET)));
         let decoderResult = new DecoderResult(rawBytes, result, null, null);
         decoderResult.setNumBits(correctedBits.length);
         return decoderResult;
     }
     // This method is used for testing the high-level encoder
-    static highLevelDecode(correctedBits) {
-        return this.getEncodedData(correctedBits);
+    static highLevelDecode(correctedBits, hints) {
+        return this.getEncodedData(correctedBits, CharacterSetECI.getCharacterSetECIByValue(hints.get(DecodeHintType.CHARACTER_SET)));
     }
     /**
      * Gets the string encoded in the aztec code bits
      *
      * @return the decoded string
      */
-    static getEncodedData(correctedBits) {
+    static getEncodedData(correctedBits, chaset) {
         let endIndex = correctedBits.length;
         let latchTable = Table.UPPER; // table most recently latched to
         let shiftTable = Table.UPPER; // table to use for the next read
@@ -83,7 +85,7 @@ export default class Decoder {
                         break;
                     }
                     const code = Decoder.readCode(correctedBits, index, 8);
-                    result += /*(char)*/ StringUtils.castAsNonUtf8Char(code);
+                    result += /*(char)*/ StringUtils.castAsNonUtf8Char(code, CharacterSetECI.Cp1251);
                     index += 8;
                 }
                 // Go back to whatever mode we had been in

@@ -1,5 +1,6 @@
 import AztecDetectorResult from '../AztecDetectorResult';
 import DecoderResult from '../../common/DecoderResult';
+import DecodeHintType from '../../DecodeHintType';
 /**
  * <p>The main class which implements Aztec Code decoding -- as opposed to locating and extracting
  * the Aztec Code from an image.</p>
@@ -13,8 +14,8 @@ export default class Decoder {
     private static PUNCT_TABLE;
     private static DIGIT_TABLE;
     private ddata;
-    decode(detectorResult: AztecDetectorResult): DecoderResult;
-    static highLevelDecode(correctedBits: boolean[]): string;
+    decode(detectorResult: AztecDetectorResult, hints?: Map<DecodeHintType, any> | null): DecoderResult;
+    static highLevelDecode(correctedBits: boolean[], hints: Map<DecodeHintType, any>): string;
     /**
      * Gets the string encoded in the aztec code bits
      *
