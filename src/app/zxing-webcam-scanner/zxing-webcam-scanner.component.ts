@@ -19,6 +19,7 @@ enum ScannerState {
   SUCCESS = "Success",
   LOADING = "Loading",
   ERROR = "Error",
+  CAMERA_LOCK_ERROR = "Camera lock error"
 }
 
 type CharSet = "Cp1252" | "Cp1251" | "UTF8" | "KOI8_R"| '';
@@ -64,7 +65,7 @@ export class ZxingWebcamScannerComponent implements AfterViewInit {
       this.videoInputDevices = videoInputDevices;
       this.selectedDeviceId =
         videoInputDevices[1]?.deviceId || videoInputDevices[0]?.deviceId;
-    });
+    }).catch(e => this.state = ScannerState.CAMERA_LOCK_ERROR);
     this.startEncode();
   }
 
