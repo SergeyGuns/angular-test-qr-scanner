@@ -44,7 +44,7 @@ export default class AztecReader {
             let detectorResult = detector.detectMirror(false);
             points = detectorResult.getPoints();
             this.reportFoundResultPoints(hints, points);
-            decoderResult = new Decoder().decode(detectorResult);
+            decoderResult = new Decoder().decode(detectorResult, hints);
         }
         catch (e) {
             exception = e;
@@ -54,7 +54,7 @@ export default class AztecReader {
                 let detectorResult = detector.detectMirror(true);
                 points = detectorResult.getPoints();
                 this.reportFoundResultPoints(hints, points);
-                decoderResult = new Decoder().decode(detectorResult);
+                decoderResult = new Decoder().decode(detectorResult, hints);
             }
             catch (e) {
                 if (exception != null) {

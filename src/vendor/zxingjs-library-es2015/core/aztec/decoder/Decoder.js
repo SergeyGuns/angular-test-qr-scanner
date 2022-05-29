@@ -41,25 +41,27 @@ var Table;
 export default class Decoder {
     decode(detectorResult, hints = null) {
         this.ddata = detectorResult;
+        const charsetName = hints.get(DecodeHintType.CHARACTER_SET);
+        const charset = CharacterSetECI.getCharacterSetECIByName(charsetName);
         let matrix = detectorResult.getBits();
         let rawbits = this.extractBits(matrix);
         let correctedBits = this.correctBits(rawbits);
         let rawBytes = Decoder.convertBoolArrayToByteArray(correctedBits);
-        let result = Decoder.getEncodedData(correctedBits, CharacterSetECI.getCharacterSetECIByValue(hints.get(DecodeHintType.CHARACTER_SET)));
+        let result = Decoder.getEncodedData(correctedBits, charset);
         let decoderResult = new DecoderResult(rawBytes, result, null, null);
         decoderResult.setNumBits(correctedBits.length);
         return decoderResult;
     }
     // This method is used for testing the high-level encoder
     static highLevelDecode(correctedBits, hints) {
-        return this.getEncodedData(correctedBits, CharacterSetECI.getCharacterSetECIByValue(hints.get(DecodeHintType.CHARACTER_SET)));
+        return this.getEncodedData(correctedBits, hints.get(DecodeHintType.CHARACTER_SET));
     }
     /**
      * Gets the string encoded in the aztec code bits
      *
      * @return the decoded string
      */
-    static getEncodedData(correctedBits, chaset) {
+    static getEncodedData(correctedBits, charset) {
         let endIndex = correctedBits.length;
         let latchTable = Table.UPPER; // table most recently latched to
         let shiftTable = Table.UPPER; // table to use for the next read
@@ -85,7 +87,7 @@ export default class Decoder {
                         break;
                     }
                     const code = Decoder.readCode(correctedBits, index, 8);
-                    result += /*(char)*/ StringUtils.castAsNonUtf8Char(code, CharacterSetECI.Cp1251);
+                    result += /*(char)*/ StringUtils.castAsNonUtf8Char(code, charset || CharacterSetECI.Cp1251);
                     index += 8;
                 }
                 // Go back to whatever mode we had been in
