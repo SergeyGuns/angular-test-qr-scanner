@@ -87,7 +87,7 @@ export default class Decoder {
                         break;
                     }
                     const code = Decoder.readCode(correctedBits, index, 8);
-                    result += /*(char)*/ StringUtils.castAsNonUtf8Char(code, charset || CharacterSetECI.Cp1251);
+                    result += /*(char)*/ StringUtils.castAsNonUtf8Char(code, charset);
                     index += 8;
                 }
                 // Go back to whatever mode we had been in

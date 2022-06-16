@@ -15,8 +15,8 @@
  */
 /*namespace com.google.zxing.oned {*/
 import BarcodeFormat from '../BarcodeFormat';
-import Result from '../Result';
 import NotFoundException from '../NotFoundException';
+import Result from '../Result';
 import EAN13Reader from './EAN13Reader';
 import UPCEANReader from './UPCEANReader';
 /**
