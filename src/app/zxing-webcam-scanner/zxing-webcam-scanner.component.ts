@@ -86,9 +86,9 @@ export class ZxingWebcamScannerComponent implements AfterViewInit {
         this.videoInputDevices = videoInputDevices;
         this.selectedDeviceId =
           videoInputDevices[1]?.deviceId || videoInputDevices[0]?.deviceId;
+          this.startEncode();
       })
       .catch((e) => (this.state = ScannerState.CAMERA_LOCK_ERROR));
-    this.startEncode();
   }
 
   startEncode() {
