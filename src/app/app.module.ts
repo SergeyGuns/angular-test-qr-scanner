@@ -2,17 +2,19 @@ import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
 
 import { AppComponent } from './app.component';
-import { ZxingWebcamScannerComponent } from './zxing-webcam-scanner/zxing-webcam-scanner.component';
+import { QrCodeScannerComponent } from './zxing-webcam-scanner/qr-code-scanner.component';
 import { RouterModule } from '@angular/router';
 import { routes } from './app.routes';
 import { UploadImageScannerComponent } from './upload-image-scanner/upload-image-scanner.component';
+import { CanvasScannerComponent } from './canvas-scanner/canvas-scanner.component';
 
 
 @NgModule({
   declarations: [
     AppComponent,
-    ZxingWebcamScannerComponent,
-    UploadImageScannerComponent
+    QrCodeScannerComponent,
+    UploadImageScannerComponent,
+    CanvasScannerComponent
   ],
   imports: [
     BrowserModule,

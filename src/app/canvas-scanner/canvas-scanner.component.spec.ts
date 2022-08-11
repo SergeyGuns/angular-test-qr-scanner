@@ -1,20 +1,20 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { ZxingWebcamScannerComponent } from './zxing-webcam-scanner.component';
+import { CanvasScannerComponent } from './canvas-scanner.component';
 
-describe('ZxingWebcamScannerComponent', () => {
-  let component: ZxingWebcamScannerComponent;
-  let fixture: ComponentFixture<ZxingWebcamScannerComponent>;
+describe('CanvasScannerComponent', () => {
+  let component: CanvasScannerComponent;
+  let fixture: ComponentFixture<CanvasScannerComponent>;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ ZxingWebcamScannerComponent ]
+      declarations: [ CanvasScannerComponent ]
     })
     .compileComponents();
   }));
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(ZxingWebcamScannerComponent);
+    fixture = TestBed.createComponent(CanvasScannerComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

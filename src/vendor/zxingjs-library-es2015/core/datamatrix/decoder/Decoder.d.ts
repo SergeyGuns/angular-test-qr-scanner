@@ -1,3 +1,4 @@
+import DecodeHintType from '../../DecodeHintType';
 import BitMatrix from '../../common/BitMatrix';
 import DecoderResult from '../../common/DecoderResult';
 /**
@@ -18,7 +19,7 @@ export default class Decoder {
      * @throws FormatException if the Data Matrix Code cannot be decoded
      * @throws ChecksumException if error correction fails
      */
-    decode(bits: BitMatrix): DecoderResult;
+    decode(bits: BitMatrix, hints?: Map<DecodeHintType, any>): DecoderResult;
     /**
      * <p>Given data and error-correction codewords received, possibly corrupted by errors, attempts to
      * correct the errors in-place using Reed-Solomon error correction.</p>

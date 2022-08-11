@@ -31,7 +31,7 @@ export default class StringUtils {
     static castAsNonUtf8Char(code, encoding = null) {
         // ISO 8859-1 is the Java default as UTF-8 is JavaScripts
         // you can see this method as a Java version of String.fromCharCode
-        const e = encoding ? encoding.getName() : this.ISO88591;
+        const e = encoding ? encoding.getName() : this.ISO88595;
         // use passed format (fromCharCode will return UTF8 encoding)
         return StringEncoding.decode(new Uint8Array([code]), e);
     }
@@ -273,6 +273,7 @@ export default class StringUtils {
 StringUtils.SHIFT_JIS = CharacterSetECI.SJIS.getName(); // "SJIS"
 StringUtils.GB2312 = 'GB2312';
 StringUtils.ISO88591 = CharacterSetECI.ISO8859_1.getName(); // "ISO8859_1"
+StringUtils.ISO88595 = CharacterSetECI.ISO8859_5.getName(); // "ISO8859_1"
 StringUtils.EUC_JP = 'EUC_JP';
 StringUtils.UTF8 = CharacterSetECI.UTF8.getName(); // "UTF8"
 StringUtils.PLATFORM_DEFAULT_ENCODING = StringUtils.UTF8; // "UTF8"//Charset.defaultCharset().name()

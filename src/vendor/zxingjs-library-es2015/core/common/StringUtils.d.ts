@@ -12,6 +12,7 @@ export default class StringUtils {
     static SHIFT_JIS: string;
     static GB2312: string;
     static ISO88591: string;
+    static ISO88595: string;
     private static EUC_JP;
     private static UTF8;
     private static PLATFORM_DEFAULT_ENCODING;

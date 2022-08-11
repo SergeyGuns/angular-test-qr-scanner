@@ -15,7 +15,7 @@ export default class Decoder {
     private static DIGIT_TABLE;
     private ddata;
     decode(detectorResult: AztecDetectorResult, hints?: Map<DecodeHintType, any> | null): DecoderResult;
-    static highLevelDecode(correctedBits: boolean[], hints: Map<DecodeHintType, any>): string;
+    static highLevelDecode(correctedBits: boolean[], hints?: Map<DecodeHintType, any>): string;
     /**
      * Gets the string encoded in the aztec code bits
      *

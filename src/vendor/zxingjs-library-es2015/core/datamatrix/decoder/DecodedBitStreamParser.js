@@ -5,6 +5,7 @@ import StringEncoding from '../../util/StringEncoding';
 import StringUtils from '../../common/StringUtils';
 import FormatException from '../../FormatException';
 import IllegalStateException from '../../IllegalStateException';
+import DecodeHintType from '../../DecodeHintType';
 /*
  * Copyright 2008 ZXing authors
  *
@@ -40,7 +41,7 @@ var Mode;
  * @author Sean Owen
  */
 export default class DecodedBitStreamParser {
-    static decode(bytes) {
+    static decode(bytes, hints) {
         const bits = new BitSource(bytes);
         const result = new StringBuilder();
         const resultTrailer = new StringBuilder();
@@ -76,6 +77,8 @@ export default class DecodedBitStreamParser {
         if (resultTrailer.length() > 0) {
             result.append(resultTrailer.toString());
         }
+        hints && console.log(hints.get(DecodeHintType.CHARACTER_SET));
+        console.log(result.toString());
         return new DecoderResult(bytes, result.toString(), byteSegments.length === 0 ? null : byteSegments, null);
     }
     /**

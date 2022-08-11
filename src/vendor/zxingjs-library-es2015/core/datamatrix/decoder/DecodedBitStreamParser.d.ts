@@ -22,7 +22,7 @@ export default class DecodedBitStreamParser {
     private static TEXT_BASIC_SET_CHARS;
     private static TEXT_SHIFT2_SET_CHARS;
     private static TEXT_SHIFT3_SET_CHARS;
-    static decode(bytes: Uint8Array): DecoderResult;
+    static decode(bytes: Uint8Array, hints: any): DecoderResult;
     /**
      * See ISO 16022:2006, 5.2.3 and Annex C, Table C.2
      */

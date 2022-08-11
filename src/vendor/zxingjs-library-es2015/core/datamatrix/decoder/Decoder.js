@@ -38,7 +38,7 @@ export default class Decoder {
      * @throws FormatException if the Data Matrix Code cannot be decoded
      * @throws ChecksumException if error correction fails
      */
-    decode(bits) {
+    decode(bits, hints) {
         // Construct a parser and read version, error-correction level
         const parser = new BitMatrixParser(bits);
         const version = parser.getVersion();
@@ -65,7 +65,7 @@ export default class Decoder {
             }
         }
         // Decode the contents of that stream of bytes
-        return DecodedBitStreamParser.decode(resultBytes);
+        return DecodedBitStreamParser.decode(resultBytes, hints || null);
     }
     /**
      * <p>Given data and error-correction codewords received, possibly corrupted by errors, attempts to
