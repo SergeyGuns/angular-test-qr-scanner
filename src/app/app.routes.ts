@@ -11,6 +11,4 @@ export enum PATHS {
 
 export const routes: Routes = [
   { path: PATHS.webCamScanner, component: QrCodeScannerComponent },
-  { path: PATHS.uploadImageScanner, component: UploadImageScannerComponent},
-  { path: PATHS.canvasScanner, component: CanvasScannerComponent}
 ]

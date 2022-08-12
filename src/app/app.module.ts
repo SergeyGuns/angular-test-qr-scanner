@@ -7,6 +7,7 @@ import { RouterModule } from '@angular/router';
 import { routes } from './app.routes';
 import { UploadImageScannerComponent } from './upload-image-scanner/upload-image-scanner.component';
 import { CanvasScannerComponent } from './canvas-scanner/canvas-scanner.component';
+import { WikiPayApiService } from './zxing-webcam-scanner/mock/api';
 
 
 @NgModule({

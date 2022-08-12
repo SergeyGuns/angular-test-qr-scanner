@@ -1,7 +1,9 @@
+import CharacterSetECI from '../common/CharacterSetECI';
 import StringUtils from '../common/StringUtils';
 export default class StringBuilder {
     constructor(value = '') {
         this.value = value;
+        this.encoding = CharacterSetECI.UTF8;
     }
     enableDecoding(encoding) {
         this.encoding = encoding;

@@ -60,7 +60,6 @@ export function chekingCharsetStatus(text: string): CHEKING_STATUS {
 
 export function stQrTextToJSON(text: string): any {
   const result = {
-    RawQr: text,
   };
   let propertySeparator = "|";
   const keyValueSeparator = "=";
