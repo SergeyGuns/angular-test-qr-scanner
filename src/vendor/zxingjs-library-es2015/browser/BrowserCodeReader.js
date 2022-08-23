@@ -166,7 +166,7 @@ export class BrowserCodeReader {
      *
      * @memberOf BrowserCodeReader
      */
-    decodeOnceFromVideoDevice(deviceId, videoSource) {
+    decodeOnceFromVideoDevice(deviceId, videoSource, inputVideoConstraints) {
         return __awaiter(this, void 0, void 0, function* () {
             this.reset();
             let videoConstraints;
@@ -176,7 +176,7 @@ export class BrowserCodeReader {
             else {
                 videoConstraints = { deviceId: { exact: deviceId } };
             }
-            const constraints = { video: videoConstraints };
+            const constraints = { video: Object.assign(Object.assign({}, videoConstraints), inputVideoConstraints) };
             return yield this.decodeOnceFromConstraints(constraints, videoSource);
         });
     }

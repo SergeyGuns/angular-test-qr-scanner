@@ -16,8 +16,8 @@ export class WikiPayApiService {
     providedIn: 'root',
   })
 export class OperationRunService {
-    startOperationByScenarioResultModal(params) {
-
+    startOperationByScenarioResultInline(params) {
+        console.log('operation launch with', params)
     }
 }
 

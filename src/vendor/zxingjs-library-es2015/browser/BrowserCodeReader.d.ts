@@ -141,7 +141,7 @@ export declare class BrowserCodeReader {
      *
      * @memberOf BrowserCodeReader
      */
-    decodeOnceFromVideoDevice(deviceId?: string, videoSource?: string | HTMLVideoElement): Promise<Result>;
+    decodeOnceFromVideoDevice(deviceId?: string, videoSource?: string | HTMLVideoElement, inputVideoConstraints?: MediaTrackConstraints): Promise<Result>;
     /**
      * In one attempt, tries to decode the barcode from a stream obtained from the given constraints while showing the video in the specified video element.
      *

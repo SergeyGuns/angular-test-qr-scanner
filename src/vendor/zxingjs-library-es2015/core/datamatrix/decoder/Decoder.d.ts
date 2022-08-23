@@ -1,4 +1,4 @@
-import DecodeHintType from '../../DecodeHintType';
+import DecodeHintType from '../../../core/DecodeHintType';
 import BitMatrix from '../../common/BitMatrix';
 import DecoderResult from '../../common/DecoderResult';
 /**

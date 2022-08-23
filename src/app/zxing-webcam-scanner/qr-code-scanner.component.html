@@ -1,5 +1,7 @@
 <div>
+  cameraMode: {{cameraMode}}
   <div class="qr-code-scanner">
+    
     <div class="qr-code-scanner__camera-frame-wrapper">
       <div *ngIf="state === STATE.CAMERA_LOCKED" class="qr-code-scanner__camera-frame">
         <!-- TODO иконку добавить в rui-kit -->
@@ -38,5 +40,5 @@
       </button>
     </div>
   </div>
-  <pre><code>{{result}}</code></pre>
+  <!-- <pre><code>{{result}}</code></pre> -->
 </div>
