@@ -4,29 +4,26 @@ import {
   ChangeDetectorRef,
   Component,
   ElementRef,
-  EventEmitter,
-  Inject,
-  OnDestroy,
+  EventEmitter, OnDestroy,
   Output,
-  ViewChild,
+  ViewChild
 } from "@angular/core";
 
-import { environment } from "src/environments/environment";
 import {
   BarcodeFormat,
   BinaryBitmap,
   BrowserMultiFormatReader,
   DecodeHintType,
   Result,
-  ResultMetadataType,
+  ResultMetadataType
 } from "src/vendor/zxingjs-library-es2015";
 import {
   IQrCodeParam,
   OperationRunService,
-  WikiPayApiService,
+  WikiPayApiService
 } from "./mock/api";
 
-import { CHEKING_STATUS, chekingCharsetStatus, stQrTextToJSON } from "./utils";
+import { chekingCharsetStatus, CHEKING_STATUS, stQrTextToJSON } from "./utils";
 
 export enum STATE {
   CAMERA_LOCKED = 'CAMERA_LOCKED',
@@ -34,13 +31,12 @@ export enum STATE {
 }
 
 enum CAMERA_MODE {
-  BACK="BACK",
-  FRONT="FRONT"
+  BACK = "BACK",
+  FRONT = "FRONT"
 }
 const CAMERA_CONSTRAINS = {
-  [CAMERA_MODE.FRONT]:{ facingMode: "user" },
-  [CAMERA_MODE.BACK]:{ facingMode: 'environment' }
-
+  [CAMERA_MODE.FRONT]: { facingMode: "user" },
+  [CAMERA_MODE.BACK]: { facingMode: 'environment' }
 }
 export enum CAMERA_API_ERROR_NAME {
   NotAllowedError = 'NotAllowedError',
@@ -75,11 +71,9 @@ export class QrCodeScannerComponent implements AfterViewInit, OnDestroy {
   @Output() readonly handleClose: EventEmitter<void> = new EventEmitter()
   STATE = STATE
   ERROR = ERROR
-  CAMERA_MODE=CAMERA_MODE
+  CAMERA_MODE = CAMERA_MODE
   private reader: BrowserMultiFormatReader
-  private selectedDeviceId: string
 
-  private videoInputDevices: MediaDeviceInfo[] = []
   private scannerFormats = [BarcodeFormat.QR_CODE, BarcodeFormat.AZTEC]
   private scannerDefaultCharset: Charset = Charset.UTF8
 
@@ -106,22 +100,12 @@ export class QrCodeScannerComponent implements AfterViewInit, OnDestroy {
     private wikiPayApiService: WikiPayApiService,
     private operationRunService: OperationRunService,
     private cdr: ChangeDetectorRef,
-  ) {}
+  ) { }
 
   ngAfterViewInit(): void {
     this.reader = new BrowserMultiFormatReader(
       this.createScannerHints(this.scannerDefaultCharset, this.scannerFormats),
     )
-    this.reader
-      .listVideoInputDevices()
-      .then((devices) => {
-        this.videoInputDevices = devices // set a swichable camera list
-        this.selectedDeviceId = devices[1]?.deviceId || devices[0]?.deviceId
-        this.startEncode()
-      })
-      .catch((error) => {
-        this.state = STATE.CAMERA_LOCKED
-      })
   }
 
   ngOnDestroy(): void {
@@ -142,7 +126,7 @@ export class QrCodeScannerComponent implements AfterViewInit, OnDestroy {
   private startEncode(): void {
     this.state = STATE.CAMERA_UNLOCKED
     this.reader
-      .decodeOnceFromVideoDevice(this.selectedDeviceId, this.videoElement?.nativeElement, CAMERA_CONSTRAINS[this.cameraMode])
+      .decodeOnceFromVideoDevice(null, this.videoElement?.nativeElement, CAMERA_CONSTRAINS[this.cameraMode])
       .then((result) => this.decodeCallBack(result))
       .catch((e) => {
         if (
@@ -158,40 +142,36 @@ export class QrCodeScannerComponent implements AfterViewInit, OnDestroy {
   private decodeCallBack(result: Result): void {
     const charsetStatus = chekingCharsetStatus(result.getText())
     const image = result.getResultMetadata().get(ResultMetadataType.BINARY_BITMAP) as BinaryBitmap
-    if (charsetStatus === CHEKING_STATUS.NSPK_OK || charsetStatus === CHEKING_STATUS.GOST_OK) {
-      this.fixResultScanner(result, Charset.UTF8, charsetStatus)
-      this.handleClose.emit()
-    } else if (
-      charsetStatus === CHEKING_STATUS.CHARSET_ERR ||
-      charsetStatus === CHEKING_STATUS.KOI8R_ERR
-    ) {
-      const anotherCharsetResults: any = {}
-      const charsetAttempts: Charset[] = [Charset.CP1251, Charset.KOI8_R, Charset.CP1252]
-      const allCharsetTextResults: [Charset, Result][] = charsetAttempts.map((charset) => {
-        const [status, result] = this.decodeBitmap(image, charset)
-        anotherCharsetResults[status] = result
-        return [charset, result]
-      })
-
-      if (anotherCharsetResults[CHEKING_STATUS.GOST_OK]) {
-        this.fixResultScanner(
-          anotherCharsetResults[CHEKING_STATUS.GOST_OK],
-          null,
-          CHEKING_STATUS.GOST_OK,
-        )
-      } else {
-        allCharsetTextResults.forEach(([charset, result]) => {
-          this.fixResultScanner(result, charset)
-        })
-        if (anotherCharsetResults[CHEKING_STATUS.NOT_PAYMENT_INFO]) {
-          this.codeReaderErrorHandler(ERROR.VALIDATION)
-        } else {
-          this.codeReaderErrorHandler(ERROR.CHARACTERSET_VALIDATION)
-        }
-      }
+    const anotherCharsetResults: any = {}
+    const charsetAttempts: Charset[] = [Charset.UTF8, Charset.CP1251, Charset.KOI8_R, Charset.CP1252]
+    const allCharsetTextResults: [Charset, Result][] = charsetAttempts.map((charset) => {
+      const [status, result] = this.decodeBitmap(image, charset)
+      anotherCharsetResults[status] = result
+      return [charset, result]
+    })
+    if (anotherCharsetResults[CHEKING_STATUS.NSPK_OK]) {
+      this.fixResultScanner(
+        anotherCharsetResults[CHEKING_STATUS.NSPK_OK],
+        null,
+        CHEKING_STATUS.NSPK_OK,
+      )
+    } else if (anotherCharsetResults[CHEKING_STATUS.GOST_OK]) {
+      this.fixResultScanner(
+        anotherCharsetResults[CHEKING_STATUS.GOST_OK],
+        null,
+        CHEKING_STATUS.GOST_OK,
+      )
     } else {
-      this.codeReaderErrorHandler(ERROR.VALIDATION)
+      allCharsetTextResults.forEach(([charset, result]) => {
+        this.fixResultScanner(result, charset)
+      })
+      if (anotherCharsetResults[CHEKING_STATUS.NOT_PAYMENT_INFO]) {
+        this.codeReaderErrorHandler(ERROR.VALIDATION)
+      } else {
+        this.codeReaderErrorHandler(ERROR.CHARACTERSET_VALIDATION)
+      }
     }
+
   }
 
   private decodeBitmap(image: BinaryBitmap, charSet: Charset): [CHEKING_STATUS, Result] {
@@ -245,14 +225,6 @@ export class QrCodeScannerComponent implements AfterViewInit, OnDestroy {
 
   onChangeCamera(): void {
     this.cameraMode = this.cameraMode === CAMERA_MODE.BACK ? CAMERA_MODE.FRONT : CAMERA_MODE.BACK
-    let nextDeviceIndex = 0
-    const currDeviceIndex = this.videoInputDevices.findIndex(
-      (device) => device.deviceId === this.selectedDeviceId,
-    )
-    if (currDeviceIndex !== this.videoInputDevices.length - 1) {
-      nextDeviceIndex = currDeviceIndex + 1
-    }
-    this.selectedDeviceId = this.videoInputDevices[nextDeviceIndex]?.deviceId
     this.resetEncode()
     this.startEncode()
   }
