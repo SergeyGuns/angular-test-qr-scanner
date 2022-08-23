@@ -106,6 +106,7 @@ export class QrCodeScannerComponent implements AfterViewInit, OnDestroy {
     this.reader = new BrowserMultiFormatReader(
       this.createScannerHints(this.scannerDefaultCharset, this.scannerFormats),
     )
+    this.startEncode()
   }
 
   ngOnDestroy(): void {
@@ -124,9 +125,11 @@ export class QrCodeScannerComponent implements AfterViewInit, OnDestroy {
   }
 
   private startEncode(): void {
+    const constraints: MediaStreamConstraints = { video: CAMERA_CONSTRAINS[this.cameraMode]}
+
     this.state = STATE.CAMERA_UNLOCKED
     this.reader
-      .decodeOnceFromVideoDevice(null, this.videoElement?.nativeElement, CAMERA_CONSTRAINS[this.cameraMode])
+      .decodeOnceFromConstraints(constraints,this.videoElement?.nativeElement)
       .then((result) => this.decodeCallBack(result))
       .catch((e) => {
         if (
