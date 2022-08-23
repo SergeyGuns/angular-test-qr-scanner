@@ -125,11 +125,11 @@ export class QrCodeScannerComponent implements AfterViewInit, OnDestroy {
   }
 
   private startEncode(): void {
-    const constraints: MediaStreamConstraints = { video: CAMERA_CONSTRAINS[this.cameraMode]}
+    const constraints: MediaStreamConstraints = { video: CAMERA_CONSTRAINS[this.cameraMode] }
 
     this.state = STATE.CAMERA_UNLOCKED
     this.reader
-      .decodeOnceFromConstraints(constraints,this.videoElement?.nativeElement)
+      .decodeOnceFromConstraints(constraints, this.videoElement?.nativeElement)
       .then((result) => this.decodeCallBack(result))
       .catch((e) => {
         if (
@@ -143,10 +143,14 @@ export class QrCodeScannerComponent implements AfterViewInit, OnDestroy {
   }
   // TODO refactoring @ganinsa https://gitlab-01/retail/web/applications/retail-website/-/merge_requests/2012#note_893076
   private decodeCallBack(result: Result): void {
-    const charsetStatus = chekingCharsetStatus(result.getText())
     const image = result.getResultMetadata().get(ResultMetadataType.BINARY_BITMAP) as BinaryBitmap
     const anotherCharsetResults: any = {}
-    const charsetAttempts: Charset[] = [Charset.UTF8, Charset.CP1251, Charset.KOI8_R, Charset.CP1252]
+    const charsetAttempts: Charset[] = [
+      Charset.UTF8,
+      Charset.CP1251,
+      Charset.KOI8_R,
+      Charset.CP1252,
+    ]
     const allCharsetTextResults: [Charset, Result][] = charsetAttempts.map((charset) => {
       const [status, result] = this.decodeBitmap(image, charset)
       anotherCharsetResults[status] = result
@@ -174,7 +178,6 @@ export class QrCodeScannerComponent implements AfterViewInit, OnDestroy {
         this.codeReaderErrorHandler(ERROR.CHARACTERSET_VALIDATION)
       }
     }
-
   }
 
   private decodeBitmap(image: BinaryBitmap, charSet: Charset): [CHEKING_STATUS, Result] {
@@ -185,7 +188,9 @@ export class QrCodeScannerComponent implements AfterViewInit, OnDestroy {
 
   private fixResultScanner(result: Result, charset?: Charset, status?: CHEKING_STATUS): void {
     let requestResultBody: IQrCodeParam[] = [{ key: 'RawQr', value: result.getText() }]
-
+    if (!status) {
+      console.warn(result, charset)
+    }
     switch (status) {
       case CHEKING_STATUS.NSPK_OK: {
         requestResultBody = requestResultBody.concat([
