@@ -678,6 +678,11 @@ export class BrowserCodeReader {
         const hybridBinarizer = new HybridBinarizer(luminanceSource);
         return new BinaryBitmap(hybridBinarizer);
     }
+    createBinaryBitmapFromCanvas(canvas) {
+        const luminanceSource = new HTMLCanvasElementLuminanceSource(canvas);
+        const hybridBinarizer = new HybridBinarizer(luminanceSource);
+        return new BinaryBitmap(hybridBinarizer);
+    }
     /**
      *
      */

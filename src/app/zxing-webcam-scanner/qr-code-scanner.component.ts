@@ -98,7 +98,7 @@ export class QrCodeScannerComponent implements AfterViewInit, OnDestroy {
 
   constructor(
     private wikiPayApiService: WikiPayApiService,
-    private operationRunService: OperationRunService,
+    public operationRunService: OperationRunService,
     private cdr: ChangeDetectorRef,
   ) { }
 

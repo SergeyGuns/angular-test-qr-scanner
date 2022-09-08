@@ -1,7 +1,11 @@
 <p>upload-image-scanner works!</p>
-<img #uploadImage [src]='picture' alt="">
-<canvas #canvasElement id="canvasElement" height="1080" width="1920"></canvas>
+<p>Loading: {{isLoading}}</p>
 <p>
-    file: 
+    file:
     <input type="file" (change)="onFileSelected($event)" name="" id="">
 </p>
+<img hidden #uploadImage [src]='picture' (load)="onImageLoad($event)" alt="">
+<canvas hidden #canvasElement></canvas>
+<pre *ngIf="result"><code>
+    {{result?.getText()}}
+</code></pre>

@@ -338,6 +338,7 @@ export declare class BrowserCodeReader {
      * @param mediaElement HTML element containing drawable image source.
      */
     createBinaryBitmap(mediaElement: HTMLVisualMediaElement): BinaryBitmap;
+    createBinaryBitmapFromCanvas(canvas: HTMLCanvasElement): BinaryBitmap;
     /**
      *
      */

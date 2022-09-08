@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { PATHS } from './app.routes';
+import { PATH } from './app.routes';
 
 @Component({
   selector: 'app-root',
@@ -8,5 +8,5 @@ import { PATHS } from './app.routes';
 })
 export class AppComponent {
   title = 'angular-webcam-scanner';
-  PATHS = PATHS
+  PATHS = PATH
 }
