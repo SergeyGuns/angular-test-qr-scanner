@@ -67,6 +67,7 @@ export class UploadImageScannerComponent implements OnInit, AfterViewInit {
   }
 
   decodeImage(image?: HTMLImageElement) {
+    console.log(image)
     if (!image?.src) return;
     // this.barCodeReader.decodeFromImageElement(this.image.nativeElement)
     const canvas = this.canvas.nativeElement as HTMLCanvasElement
