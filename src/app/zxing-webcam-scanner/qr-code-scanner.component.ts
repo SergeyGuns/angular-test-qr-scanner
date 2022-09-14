@@ -80,6 +80,7 @@ export class QrCodeScannerComponent implements AfterViewInit, OnDestroy {
   cameraMode = CAMERA_MODE.BACK
   _errorStatus: ERROR = null
   _state: STATE = STATE.CAMERA_LOCKED
+  resultText: string;
   get errorStatus(): ERROR {
     return this._errorStatus
   }
@@ -150,6 +151,7 @@ export class QrCodeScannerComponent implements AfterViewInit, OnDestroy {
       Charset.CP1251,
       Charset.KOI8_R,
       Charset.CP1252,
+      null
     ]
     const allCharsetTextResults: [Charset, Result][] = charsetAttempts.map((charset) => {
       const [status, result] = this.decodeBitmap(image, charset)
@@ -173,16 +175,16 @@ export class QrCodeScannerComponent implements AfterViewInit, OnDestroy {
         this.fixResultScanner(result, charset)
       })
       if (anotherCharsetResults[CHEKING_STATUS.NOT_PAYMENT_INFO]) {
-        this.codeReaderErrorHandler(ERROR.VALIDATION)
+        this.codeReaderErrorHandler(ERROR.VALIDATION, result.getText())
       } else {
-        this.codeReaderErrorHandler(ERROR.CHARACTERSET_VALIDATION)
+        this.codeReaderErrorHandler(ERROR.CHARACTERSET_VALIDATION, result.getText())
       }
     }
   }
 
   private decodeBitmap(image: BinaryBitmap, charSet: Charset): [CHEKING_STATUS, Result] {
     const newHints = this.createScannerHints(charSet, this.scannerFormats)
-    const result = new BrowserMultiFormatReader(newHints).decodeBitmap(image)
+    const result = charSet ? new BrowserMultiFormatReader(newHints).decodeBitmap(image) : new BrowserMultiFormatReader().decodeBitmap(image)
     return [chekingCharsetStatus(result.getText()), result]
   }
 
@@ -226,8 +228,9 @@ export class QrCodeScannerComponent implements AfterViewInit, OnDestroy {
     this.handleClose.emit()
   }
 
-  private codeReaderErrorHandler(error: ERROR): void {
+  private codeReaderErrorHandler(error: ERROR, resultText: string): void {
     this.errorStatus = error
+    this.resultText = resultText
     this.startEncode()
   }
 

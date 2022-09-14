@@ -1,11 +1,19 @@
 <p>upload-image-scanner works!</p>
-<p>Loading: {{isLoading}}</p>
+<p>
+    checkbox:
+    <input type="checkbox" name="checkbox" [(value)]="isCheked">
+</p>
+<p [ngClass]="{'loading':isLoading}">Loading: {{isLoading}}</p>
 <p>
     file:
     <input type="file" (change)="onFileSelected($event)" name="" id="">
 </p>
 <img hidden #uploadImage [src]='picture' (load)="onImageLoad($event)" alt="">
+<!-- <img #aztecImage src="assets/aztec/aztec-1.gif"> -->
+<!-- <img #aztecImage src="assets/qr/kvitancia-20-ooo-kurs-plus-1.png"> -->
 <canvas hidden #canvasElement></canvas>
-<pre *ngIf="result"><code>
-    {{result?.getText()}}
-</code></pre>
+<pre *ngIf="result">
+    <code>
+        {{result?.getText()}}
+    </code>
+</pre>

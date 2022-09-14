@@ -70,6 +70,7 @@ export default class Decoder {
         let index = 0;
         while (index < endIndex) {
             if (shiftTable === Table.BINARY) {
+                console.log({ correctedBits });
                 if (endIndex - index < 5) {
                     break;
                 }
@@ -102,6 +103,7 @@ export default class Decoder {
                 let code = Decoder.readCode(correctedBits, index, size);
                 index += size;
                 let str = Decoder.getCharacter(shiftTable, code);
+                console.log({ str, code, shiftTable });
                 if (str.startsWith('CTRL_')) {
                     // Table changes
                     // ISO/IEC 24778:2008 prescribes ending a shift sequence in the mode from which it was invoked.

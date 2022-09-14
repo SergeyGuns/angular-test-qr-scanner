@@ -13,17 +13,21 @@ import { CharSetPrefix } from "../utils/scanner";
 })
 export class UploadImageScannerComponent implements OnInit, AfterViewInit {
   @ViewChild("uploadImage") image
+  @ViewChild("aztecImage") aztecImage
   @ViewChild("canvasElement") canvas
+  // worker: Worker
+  isCheked: false
   fileReader: FileReader;
   barCodeReader: BrowserMultiFormatReader;
   isLoading: boolean = false;
+  coudecodingAttempts
   picture;
   result: Result = null
   hints: Map<DecodeHintType, any> = new Map();
   formats = [
     BarcodeFormat.QR_CODE,
     // BarcodeFormat.DATA_MATRIX,
-    // BarcodeFormat.AZTEC,
+    BarcodeFormat.AZTEC,
   ];
   CHAR_SET_PREFIX_MATCH_ENCODER = {
     [CharSetPrefix.ST00011]: "Cp1251",
@@ -48,55 +52,93 @@ export class UploadImageScannerComponent implements OnInit, AfterViewInit {
     this.hints.set(DecodeHintType.CHARACTER_SET, this.encodeDefaultCharSet);
 
   }
+
   ngAfterViewInit(): void {
+    this.decodeImage(this?.aztecImage?.nativeElement)
   }
 
   ngOnInit(): void {
     this.fileReader = new FileReader();
     this.barCodeReader = new BrowserMultiFormatReader(this.hints);
+    // this.worker = new Worker('./upload-image-scanner.worker', { type: 'module' });
+    // this.worker.onmessage = ({ data }) => {
+    //   console.log(`page got message: ${data}`);
+    // };
   }
 
-
-  onImageLoad(event: Event) {
+  decodeImage(image?: HTMLImageElement) {
+    if (!image?.src) return;
     // this.barCodeReader.decodeFromImageElement(this.image.nativeElement)
-    let canvas = this.canvas.nativeElement as HTMLCanvasElement
-    let ctx = canvas.getContext("2d");
-    const image = event.currentTarget as HTMLImageElement
+    const canvas = this.canvas.nativeElement as HTMLCanvasElement
+    // this.worker.postMessage({ canvas, image });
+    const ctx = canvas.getContext('2d')
+    const MAX_CANVAS_ANGLE = 359
     let canvasAngle = 0
-    const MAX_CANVAS_ANGLE = 360
     const h = image.naturalHeight
     const w = image.naturalWidth
     canvas.height = h << 1
     canvas.width = w << 1
     ctx.drawImage(image, 0, 0);
     this.isLoading = true
-    while (this.result === null && canvasAngle < MAX_CANVAS_ANGLE) {
-      const bitmap = this.barCodeReader.createBinaryBitmapFromCanvas(canvas)
-      try {
-        this.result = this.barCodeReader.decodeBitmap(bitmap)
-      } catch (e) {
-        console.warn(canvasAngle)
+    const step = () => {
+      if (this.result === null && canvasAngle < MAX_CANVAS_ANGLE) {
+        console.log(canvasAngle)
+        const bitmap = this.barCodeReader.createBinaryBitmapFromCanvas(canvas)
+        try {
+          this.result = this.barCodeReader.decodeBitmap(bitmap)
+        } catch (e) {
+          console.warn(canvasAngle)
+        }
+        this.rotateCtx(canvas, ctx, canvasAngle, image)
+        canvasAngle++
+        window.requestAnimationFrame(step);
+      } else {
+        this.isLoading = false
       }
-      this.rotateCtx(canvas, ctx, canvasAngle, image)
-      canvasAngle++
     }
-    // this.decode(canvas, ctx, image).then(e => console.log(e))
     if (this.result) {
       this.isLoading = false
     }
-    console.log(this.result, canvasAngle)
+    window.requestAnimationFrame(step)
   }
-  decode(canvas, ctx, image) {
-    return Promise.race(new Array(359).fill(1).map((_, angle) => new Promise((resolve, reject) => {
-      const canvasRotated = this.rotateCtx(canvas, ctx, angle, image)
-      const bitmap = this.barCodeReader.createBinaryBitmapFromCanvas(canvasRotated)
-      try {
-        const result = this.barCodeReader.decodeBitmap(bitmap)
-        resolve(result)
-      } catch (e) {
+
+
+  onImageLoad(event: Event) {
+    // this.barCodeReader.decodeFromImageElement(this.image.nativeElement)
+    const canvas = this.canvas.nativeElement as HTMLCanvasElement
+    const image = event.currentTarget as HTMLImageElement
+    // this.worker.postMessage({ canvas, image });
+    const ctx = canvas.getContext('2d')
+    const MAX_CANVAS_ANGLE = 359
+    let canvasAngle = 0
+    const h = image.naturalHeight
+    const w = image.naturalWidth
+    canvas.height = h << 1
+    canvas.width = w << 1
+    ctx.drawImage(image, 0, 0);
+    this.isLoading = true
+    const step = () => {
+      if (this.result === null && canvasAngle < MAX_CANVAS_ANGLE) {
+        console.log(canvasAngle)
+        const bitmap = this.barCodeReader.createBinaryBitmapFromCanvas(canvas)
+        try {
+          this.result = this.barCodeReader.decodeBitmap(bitmap)
+        } catch (e) {
+          console.warn(canvasAngle)
+        }
+        this.rotateCtx(canvas, ctx, canvasAngle, image)
+        canvasAngle++
+        window.requestAnimationFrame(step);
+      } else {
+        this.isLoading = false
       }
-    })))
+    }
+    if (this.result) {
+      this.isLoading = false
+    }
+    window.requestAnimationFrame(step)
   }
+
   isPDF(event: Event) {
 
   }

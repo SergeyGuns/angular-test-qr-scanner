@@ -4,16 +4,12 @@
   cameraMode: {{cameraMode}}
   errorStatus: {{errorStatus}}
   <div class="qr-code-scanner">
-    
+
     <div class="qr-code-scanner__camera-frame-wrapper">
       <div *ngIf="state === STATE.CAMERA_LOCKED" class="qr-code-scanner__camera-frame">
         <!-- TODO иконку добавить в rui-kit -->
-        <img
-          width="160"
-          height="160"
-          class="qr-code-scanner__camera-off-image"
-          src="assets/img/qr-code-scanner/camera-off-white.svg"
-        />
+        <img width="160" height="160" class="qr-code-scanner__camera-off-image"
+          src="assets/img/qr-code-scanner/camera-off-white.svg" />
         <p class="qr-code-scanner__camera-off-hint">
           Разрешите доступ к&nbsp;камере для&nbsp;сканирования QR-кода
         </p>
@@ -23,20 +19,12 @@
       </div>
     </div>
     <div *ngIf="state === STATE.CAMERA_UNLOCKED" class="qr-code-scanner__controls">
-      <button
-        ruiButton
-        (click)="onChangeCamera()"
-        class="qr-code-scanner__control qr-code-scanner__control_desktop"
-      >
+      <button ruiButton (click)="onChangeCamera()" class="qr-code-scanner__control qr-code-scanner__control_desktop">
         <!-- TODO иконку добавить в rui-kit -->
         <img src="assets/img/qr-code-scanner/switch-camera-gray.svg" />
         Переключить камеру
       </button>
-      <button
-        ruiButton
-        (click)="onChangeCamera()"
-        class="qr-code-scanner__control qr-code-scanner__control_mobile"
-      >
+      <button ruiButton (click)="onChangeCamera()" class="qr-code-scanner__control qr-code-scanner__control_mobile">
         <!-- TODO иконку добавить в rui-kit -->
         <img src="assets/img/qr-code-scanner/switch-camera.svg" />
         Переключить камеру
@@ -44,4 +32,11 @@
     </div>
   </div>
   <pre><code>{{operationRunService.getTaunchedQRCodeParams()}}</code></pre>
+  <div style="border:red">
+    <pre *ngIf="resultText">
+        <code>
+            {{resultText}}
+        </code>
+    </pre>
+  </div>
 </div>
